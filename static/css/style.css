@@ -112,8 +112,16 @@ body {
 }
 
 .time-group .form-control {
+    min-width: 120px;
+}
+
+.time-group input[type="date"] {
     flex: 1;
-    min-width: 200px;
+    min-width: 140px;
+}
+
+.time-group input[type="time"] {
+    min-width: 100px;
 }
 
 /* 按钮样式 */

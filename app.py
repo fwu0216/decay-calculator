@@ -58,8 +58,8 @@ def calculate():
             return jsonify({'error': '无效的单位选择'})
         
         # 解析时间
-        t0_dt = datetime.fromisoformat(t0_str.replace('T', ' '))
-        tt_dt = datetime.fromisoformat(tt_str.replace('T', ' '))
+        t0_dt = datetime.fromisoformat(t0_str)
+        tt_dt = datetime.fromisoformat(tt_str)
         
         # 计算衰变
         delta_min, a_t = decay_activity_same_unit(a0_value, a0_unit, t0_dt, tt_dt, isotope)

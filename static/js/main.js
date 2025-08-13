@@ -15,13 +15,22 @@ function initializeApp() {
 }
 
 function setCurrentTime() {
+    // 获取东八区时间
     const now = new Date();
-    const timeString = now.toISOString().slice(0, 16);
+    const beijingTime = new Date(now.getTime() + (8 * 60 * 60 * 1000));
     
+    // 格式化日期和时间
+    const dateString = beijingTime.toISOString().slice(0, 10);
+    const timeString = beijingTime.toISOString().slice(11, 16);
+    
+    const t0Date = document.getElementById('t0_date');
     const t0Time = document.getElementById('t0_time');
+    const ttDate = document.getElementById('tt_date');
     const ttTime = document.getElementById('tt_time');
     
+    if (t0Date) t0Date.value = dateString;
     if (t0Time) t0Time.value = timeString;
+    if (ttDate) ttDate.value = dateString;
     if (ttTime) ttTime.value = timeString;
 }
 
@@ -55,7 +64,7 @@ function bindEventListeners() {
     
     // 自动计算触发
     const autoCalcElements = [
-        'isotope', 'a0_value', 'a0_unit', 't0_time', 'tt_time',
+        'isotope', 'a0_value', 'a0_unit', 't0_date', 't0_time', 'tt_date', 'tt_time',
         'value_field', 'from_unit', 'to_unit'
     ];
     
@@ -86,8 +95,15 @@ async function calculateDecay() {
     formData.append('isotope', document.getElementById('isotope').value);
     formData.append('a0_value', document.getElementById('a0_value').value);
     formData.append('a0_unit', document.getElementById('a0_unit').value);
-    formData.append('t0_time', document.getElementById('t0_time').value);
-    formData.append('tt_time', document.getElementById('tt_time').value);
+    
+    // 组合日期和时间
+    const t0Date = document.getElementById('t0_date').value;
+    const t0Time = document.getElementById('t0_time').value;
+    const ttDate = document.getElementById('tt_date').value;
+    const ttTime = document.getElementById('tt_time').value;
+    
+    formData.append('t0_time', `${t0Date}T${t0Time}`);
+    formData.append('tt_time', `${ttDate}T${ttTime}`);
     
     // 验证输入
     const a0Value = parseFloat(formData.get('a0_value'));
@@ -229,6 +245,12 @@ async function copyResult() {
 // 工具函数：格式化时间
 function formatTime(date) {
     return date.toISOString().slice(0, 16);
+}
+
+// 工具函数：获取东八区时间
+function getBeijingTime() {
+    const now = new Date();
+    return new Date(now.getTime() + (8 * 60 * 60 * 1000));
 }
 
 // 工具函数：验证数值

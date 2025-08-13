@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="app">
+    <!-- 卡片1: 同位素 + 初始剂量 + 单位 -->
+    <div class="card card1">
+        <h1 class="title">放射性衰变计算器</h1>
+        
+        <div class="form-group">
+            <label for="isotope">同位素</label>
+            <select id="isotope" name="isotope" class="form-control">
+                {% for isotope in isotopes %}
+                <option value="{{ isotope }}">{{ isotope }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="a0_value">初始剂量 A0</label>
+            <input type="number" id="a0_value" name="a0_value" class="form-control" 
+                   placeholder="例如 300.0" step="0.1" min="0">
+        </div>
+        
+        <div class="form-group">
+            <label for="a0_unit">单位</label>
+            <select id="a0_unit" name="a0_unit" class="form-control">
+                {% for unit in units %}
+                <option value="{{ unit }}" {% if unit == 'mCi' %}selected{% endif %}>{{ unit }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    
+    <!-- 卡片2: 时间设置 -->
+    <div class="card card2">
+        <div class="time-row">
+            <div class="time-group">
+                <label for="t0_time">初始时间:</label>
+                <input type="datetime-local" id="t0_time" name="t0_time" class="form-control">
+                <button type="button" id="now_btn" class="btn btn-secondary">NOW</button>
+            </div>
+        </div>
+        
+        <div class="time-row">
+            <div class="time-group">
+                <label for="tt_time">目标时间:</label>
+                <input type="datetime-local" id="tt_time" name="tt_time" class="form-control">
+            </div>
+        </div>
+    </div>
+    
+    <!-- 操作区 + 结果 -->
+    <div class="action-area">
+        <button type="button" id="calc_btn" class="btn btn-primary">计算</button>
+        <button type="button" id="copy_btn" class="btn btn-success">复制结果</button>
+    </div>
+    
+    <div id="result" class="result-area">
+        结果将显示在这里
+    </div>
+    
+    <!-- 卡片3: 活度单位换算器 -->
+    <div class="card card3">
+        <h2 class="conv-title">活度单位换算器</h2>
+        
+        <div class="form-group">
+            <input type="number" id="value_field" name="value" class="form-control" 
+                   placeholder="请输入数值" step="0.1" min="0">
+        </div>
+        
+        <div class="form-group">
+            <label for="from_unit">从</label>
+            <select id="from_unit" name="from_unit" class="form-control">
+                {% for unit in units %}
+                <option value="{{ unit }}" {% if unit == 'MBq' %}selected{% endif %}>{{ unit }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="to_unit">到</label>
+            <select id="to_unit" name="to_unit" class="form-control">
+                {% for unit in units %}
+                <option value="{{ unit }}" {% if unit == 'mCi' %}selected{% endif %}>{{ unit }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <button type="button" id="convert_btn" class="btn btn-primary">开始转换</button>
+        
+        <div id="conv_result" class="conv-result">
+        </div>
+    </div>
+</div>
+{% endblock %}

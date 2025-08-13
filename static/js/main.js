@@ -35,6 +35,15 @@ function setCurrentTime() {
 }
 
 function bindEventListeners() {
+    // 标签页切换
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetTab = this.getAttribute('data-tab');
+            switchTab(targetTab);
+        });
+    });
+    
     // NOW按钮
     const nowBtn = document.getElementById('now_btn');
     if (nowBtn) {
@@ -245,6 +254,29 @@ async function copyResult() {
 // 工具函数：格式化时间
 function formatTime(date) {
     return date.toISOString().slice(0, 16);
+}
+
+// 标签页切换函数
+function switchTab(tabName) {
+    // 移除所有标签页按钮的active类
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach(btn => btn.classList.remove('active'));
+    
+    // 隐藏所有标签页内容
+    const tabPanes = document.querySelectorAll('.tab-pane');
+    tabPanes.forEach(pane => pane.classList.remove('active'));
+    
+    // 激活选中的标签页按钮
+    const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+    }
+    
+    // 显示选中的标签页内容
+    const activePane = document.getElementById(`${tabName}-tab`);
+    if (activePane) {
+        activePane.classList.add('active');
+    }
 }
 
 // 工具函数：获取东八区时间

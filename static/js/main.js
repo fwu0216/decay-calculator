@@ -10,6 +10,9 @@ function initializeApp() {
     // 绑定事件监听器
     bindEventListeners();
     
+    // 初始化摩尔质量计算器UI
+    updateMolarUI();
+    
     // 自动计算
     autoCalculate();
 }
@@ -327,25 +330,70 @@ function updateMolarUI() {
     updateMolarLabels(calcType);
 }
 
-// 更新摩尔质量计算器标签
+// 更新摩尔质量计算器标签和单位
 function updateMolarLabels(calcType) {
-    const labelConfigs = [
-        { label1: '体积:', placeholder1: '请输入体积', label2: '浓度:', placeholder2: '请输入浓度' },
-        { label1: '质量:', placeholder1: '请输入质量', label2: '浓度:', placeholder2: '请输入浓度' },
-        { label1: '质量:', placeholder1: '请输入质量', label2: '体积:', placeholder2: '请输入体积' },
-        { label1: '质量:', placeholder1: '请输入质量', label2: '体积:', placeholder2: '请输入体积', label3: '浓度:', placeholder3: '请输入浓度' }
+    const configs = [
+        { 
+            label1: '体积:', placeholder1: '请输入体积', 
+            label2: '浓度:', placeholder2: '请输入浓度',
+            units1: ['L', 'mL'], units2: ['mol/L', 'mmol/L']
+        },
+        { 
+            label1: '质量:', placeholder1: '请输入质量', 
+            label2: '浓度:', placeholder2: '请输入浓度',
+            units1: ['g', 'mg'], units2: ['mol/L', 'mmol/L']
+        },
+        { 
+            label1: '质量:', placeholder1: '请输入质量', 
+            label2: '体积:', placeholder2: '请输入体积',
+            units1: ['g', 'mg'], units2: ['L', 'mL']
+        },
+        { 
+            label1: '质量:', placeholder1: '请输入质量', 
+            label2: '体积:', placeholder2: '请输入体积', 
+            label3: '浓度:', placeholder3: '请输入浓度',
+            units1: ['g', 'mg'], units2: ['L', 'mL'], units3: ['mol/L', 'mmol/L']
+        }
     ];
     
-    const config = labelConfigs[calcType];
+    const config = configs[calcType];
     
+    // 更新标签和占位符
     document.getElementById('input1_label').textContent = config.label1;
     document.getElementById('input1_field').placeholder = config.placeholder1;
     document.getElementById('input2_label').textContent = config.label2;
     document.getElementById('input2_field').placeholder = config.placeholder2;
     
+    // 更新单位选择框
+    updateUnitSelect('input1_unit', config.units1);
+    updateUnitSelect('input2_unit', config.units2);
+    
     if (calcType === 3) {
         document.getElementById('input3_label').textContent = config.label3;
         document.getElementById('input3_field').placeholder = config.placeholder3;
+        updateUnitSelect('input3_unit', config.units3);
+    }
+}
+
+// 更新单位选择框的辅助函数
+function updateUnitSelect(selectId, units) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    
+    // 清空现有选项
+    select.innerHTML = '';
+    
+    // 添加新选项
+    units.forEach(unit => {
+        const option = document.createElement('option');
+        option.value = unit;
+        option.textContent = unit;
+        select.appendChild(option);
+    });
+    
+    // 设置默认选中第一个选项
+    if (units.length > 0) {
+        select.value = units[0];
     }
 }
 

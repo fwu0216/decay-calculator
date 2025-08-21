@@ -118,5 +118,91 @@ def health():
     """健康检查端点"""
     return jsonify({'status': 'healthy', 'message': '衰变计算器运行正常'})
 
+# 摩尔质量计算函数
+def calculate_mass(M, V, c, volume_unit, concentration_unit):
+    """计算质量: m = M × V × c"""
+    if volume_unit == 'mL': 
+        V /= 1000
+    if concentration_unit == 'mmol/L': 
+        c /= 1000
+    formula = f"m = M × V × c = {M} × {V} × {c}"
+    mass_g = M * V * c
+    mass_mg = mass_g * 1000
+    return round(mass_g, 4), round(mass_mg, 4), formula
+
+def calculate_volume(m, M, c, mass_unit, concentration_unit):
+    """计算体积: V = m / (M × c)"""
+    if mass_unit == 'mg': 
+        m /= 1000
+    if concentration_unit == 'mmol/L': 
+        c /= 1000
+    formula = f"V = m / (M × c) = {m} / ({M} × {c})"
+    volume_L = m / (M * c)
+    volume_mL = volume_L * 1000
+    volume_uL = volume_mL * 1000
+    return round(volume_L, 4), round(volume_mL, 4), round(volume_uL, 2), formula
+
+def calculate_concentration(m, M, V, mass_unit, volume_unit):
+    """计算浓度: c = m / (M × V)"""
+    if mass_unit == 'mg': 
+        m /= 1000
+    if volume_unit == 'mL': 
+        V /= 1000
+    formula = f"c = m / (M × V) = {m} / ({M} × {V})"
+    c_mol_L = (m / M) / V
+    c_mmol_L = c_mol_L * 1000
+    return round(c_mol_L, 4), round(c_mmol_L, 4), formula
+
+def calculate_molar_mass(m, V, c, mass_unit, volume_unit, concentration_unit):
+    """反推摩尔质量: M = m / (V × c)"""
+    if mass_unit == 'mg': 
+        m /= 1000
+    if volume_unit == 'mL': 
+        V /= 1000
+    if concentration_unit == 'mmol/L': 
+        c /= 1000
+    formula = f"M = m / (V × c) = {m} / ({V} × {c})"
+    M = m / (V * c)
+    return round(M, 4), formula
+
+@app.route('/calculate_molar', methods=['POST'])
+def calculate_molar():
+    """摩尔质量计算API"""
+    try:
+        calc_type = int(request.form.get('calc_type', 0))
+        molar_mass = float(request.form.get('molar_mass', 0))
+        input1 = float(request.form.get('input1', 0))
+        input1_unit = request.form.get('input1_unit', '')
+        input2 = float(request.form.get('input2', 0))
+        input2_unit = request.form.get('input2_unit', '')
+        
+        if calc_type == 0:  # 计算质量
+            g, mg, formula = calculate_mass(molar_mass, input1, input2, input1_unit, input2_unit)
+            result = f"📘 计算公式:\n{formula}\n\n📌 结果:\n需要 {g} g\n约 {mg} mg"
+            
+        elif calc_type == 1:  # 计算体积
+            L, mL, uL, formula = calculate_volume(input1, molar_mass, input2, input1_unit, input2_unit)
+            result = f"📘 计算公式:\n{formula}\n\n📌 结果:\n{L} L\n{mL} mL\n约 {uL} μL"
+            
+        elif calc_type == 2:  # 计算浓度
+            molL, mmolL, formula = calculate_concentration(input1, molar_mass, input2, input1_unit, input2_unit)
+            result = f"📘 计算公式:\n{formula}\n\n📌 浓度:\n{molL} mol/L\n{mmolL} mmol/L"
+            
+        elif calc_type == 3:  # 反推摩尔质量
+            input3 = float(request.form.get('input3', 0))
+            input3_unit = request.form.get('input3_unit', '')
+            M_val, formula = calculate_molar_mass(input1, input2, input3, input1_unit, input2_unit, input3_unit)
+            result = f"📘 计算公式:\n{formula}\n\n📌 摩尔质量:\n{M_val} g/mol"
+            
+        else:
+            return jsonify({'error': '无效的计算类型'})
+        
+        return jsonify({'success': True, 'result': result})
+        
+    except ValueError as e:
+        return jsonify({'error': '输入格式错误，请检查数值格式'})
+    except Exception as e:
+        return jsonify({'error': f'计算失败: {str(e)}'})
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)

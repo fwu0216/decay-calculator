@@ -6,6 +6,7 @@
     <div class="tab-nav">
         <button class="tab-btn active" data-tab="decay">放射性衰变计算器</button>
         <button class="tab-btn" data-tab="converter">活度单位转换器</button>
+        <button class="tab-btn" data-tab="molar">摩尔质量计算器</button>
     </div>
 
     <!-- 标签页内容 -->
@@ -103,6 +104,89 @@
                 <button type="button" id="convert_btn" class="btn btn-primary">开始转换</button>
                 
                 <div id="conv_result" class="conv-result">
+                </div>
+            </div>
+        </div>
+
+        <!-- 摩尔质量计算器标签页 -->
+        <div id="molar-tab" class="tab-pane">
+            <div class="card card4">
+                <h2 class="molar-title">摩尔质量计算器</h2>
+                
+                <!-- 计算类型选择 -->
+                <div class="form-group">
+                    <label for="calc_type">计算类型</label>
+                    <select id="calc_type" name="calc_type" class="form-control">
+                        <option value="0">计算质量</option>
+                        <option value="1">计算体积</option>
+                        <option value="2">计算浓度</option>
+                        <option value="3">反推摩尔质量</option>
+                    </select>
+                </div>
+                
+                <!-- 试剂选择 -->
+                <div class="form-group">
+                    <label for="reagent">试剂选择</label>
+                    <select id="reagent" name="reagent" class="form-control">
+                        <option value="KHP(204.22)">KHP(204.22)</option>
+                        <option value="六水氯化铝(241.43)">六水氯化铝(241.43)</option>
+                        <option value="氢氧化钠(40.00)">氢氧化钠(40.00)</option>
+                        <option value="无水乙酸钠(82.03)">无水乙酸钠(82.03)</option>
+                        <option value="三氟乙酸(114.02)">三氟乙酸(114.02)</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+                
+                <!-- 自定义摩尔质量输入 -->
+                <div class="form-group" id="custom_molar_group" style="display: none;">
+                    <label for="custom_molar">自定义摩尔质量 (g/mol)</label>
+                    <input type="number" id="custom_molar" name="custom_molar" class="form-control" 
+                           placeholder="请输入摩尔质量" step="0.01" min="0">
+                </div>
+                
+                <!-- 动态输入字段 -->
+                <div class="form-group">
+                    <label for="input1_label" id="input1_label">体积:</label>
+                    <div class="input-row">
+                        <input type="number" id="input1_field" name="input1_field" class="form-control" 
+                               placeholder="请输入体积" step="0.01" min="0">
+                        <select id="input1_unit" name="input1_unit" class="form-control unit-select">
+                            <option value="L">L</option>
+                            <option value="mL">mL</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="input2_label" id="input2_label">浓度:</label>
+                    <div class="input-row">
+                        <input type="number" id="input2_field" name="input2_field" class="form-control" 
+                               placeholder="请输入浓度" step="0.01" min="0">
+                        <select id="input2_unit" name="input2_unit" class="form-control unit-select">
+                            <option value="mol/L">mol/L</option>
+                            <option value="mmol/L">mmol/L</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group" id="input3_group" style="display: none;">
+                    <label for="input3_label" id="input3_label">浓度:</label>
+                    <div class="input-row">
+                        <input type="number" id="input3_field" name="input3_field" class="form-control" 
+                               placeholder="请输入浓度" step="0.01" min="0">
+                        <select id="input3_unit" name="input3_unit" class="form-control unit-select">
+                            <option value="mol/L">mol/L</option>
+                            <option value="mmol/L">mmol/L</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- 计算按钮 -->
+                <button type="button" id="molar_calc_btn" class="btn btn-primary">开始计算</button>
+                
+                <!-- 结果显示 -->
+                <div id="molar_result" class="molar-result">
+                    结果将显示在这里
                 </div>
             </div>
         </div>

@@ -118,6 +118,10 @@ body {
     background-color: #F3F0FF;
 }
 
+.card4 {
+    background-color: #FFF0F5;
+}
+
 /* 标题样式 */
 .title {
     font-size: 20px;
@@ -128,6 +132,14 @@ body {
 }
 
 .conv-title {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    color: #222;
+    margin-bottom: 20px;
+}
+
+.molar-title {
     font-size: 18px;
     font-weight: bold;
     text-align: center;
@@ -278,6 +290,53 @@ body {
     margin-top: 16px;
     padding: 12px;
     background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #111;
+    line-height: 1.5;
+}
+
+/* 摩尔质量计算器样式 */
+.input-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.input-row .form-control {
+    flex: 1;
+}
+
+.unit-select {
+    min-width: 80px;
+    max-width: 100px;
+}
+
+.molar-result {
+    margin-top: 16px;
+    padding: 16px;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #111;
+    line-height: 1.6;
+    white-space: pre-line;
+    min-height: 120px;
+}
+
+.molar-result.success {
+    background-color: #e3f2fd;
+    border-color: #2196f3;
+    color: #1C7C54;
+}
+
+.molar-result.error {
+    background-color: #ffebee;
+    border-color: #f44336;
+    color: #C0392B;
+}
     border-radius: 6px;
     text-align: center;
     font-size: 16px;

@@ -71,10 +71,30 @@ function bindEventListeners() {
         convertBtn.addEventListener('click', performConversion);
     }
     
+    // 摩尔质量计算按钮
+    const molarCalcBtn = document.getElementById('molar_calc_btn');
+    if (molarCalcBtn) {
+        molarCalcBtn.addEventListener('click', performMolarCalculation);
+    }
+    
+    // 摩尔质量计算器事件监听
+    const calcTypeSelect = document.getElementById('calc_type');
+    const reagentSelect = document.getElementById('reagent');
+    
+    if (calcTypeSelect) {
+        calcTypeSelect.addEventListener('change', updateMolarUI);
+    }
+    
+    if (reagentSelect) {
+        reagentSelect.addEventListener('change', updateMolarUI);
+    }
+    
     // 自动计算触发
     const autoCalcElements = [
         'isotope', 'a0_value', 'a0_unit', 't0_date', 't0_time', 'tt_date', 'tt_time',
-        'value_field', 'from_unit', 'to_unit'
+        'value_field', 'from_unit', 'to_unit',
+        'calc_type', 'reagent', 'custom_molar', 'input1_field', 'input1_unit', 
+        'input2_field', 'input2_unit', 'input3_field', 'input3_unit'
     ];
     
     autoCalcElements.forEach(id => {
@@ -92,6 +112,7 @@ function autoCalculate() {
     window.autoCalcTimeout = setTimeout(() => {
         calculateDecay();
         performConversion();
+        performMolarCalculation();
     }, 300);
 }
 
@@ -276,6 +297,137 @@ function switchTab(tabName) {
     const activePane = document.getElementById(`${tabName}-tab`);
     if (activePane) {
         activePane.classList.add('active');
+    }
+}
+
+// 摩尔质量数据
+const MOLAR_MASSES = {
+    'KHP(204.22)': 204.22,
+    '六水氯化铝(241.43)': 241.43,
+    '氢氧化钠(40.00)': 40.00,
+    '无水乙酸钠(82.03)': 82.03,
+    '三氟乙酸(114.02)': 114.02,
+    '其他': null
+};
+
+// 摩尔质量计算器UI更新
+function updateMolarUI() {
+    const calcType = parseInt(document.getElementById('calc_type').value);
+    const reagent = document.getElementById('reagent').value;
+    const customMolarGroup = document.getElementById('custom_molar_group');
+    const input3Group = document.getElementById('input3_group');
+    
+    // 显示/隐藏自定义摩尔质量输入
+    customMolarGroup.style.display = (reagent === '其他') ? 'block' : 'none';
+    
+    // 显示/隐藏第三行输入
+    input3Group.style.display = (calcType === 3) ? 'block' : 'none';
+    
+    // 更新标签和占位符
+    updateMolarLabels(calcType);
+}
+
+// 更新摩尔质量计算器标签
+function updateMolarLabels(calcType) {
+    const labelConfigs = [
+        { label1: '体积:', placeholder1: '请输入体积', label2: '浓度:', placeholder2: '请输入浓度' },
+        { label1: '质量:', placeholder1: '请输入质量', label2: '浓度:', placeholder2: '请输入浓度' },
+        { label1: '质量:', placeholder1: '请输入质量', label2: '体积:', placeholder2: '请输入体积' },
+        { label1: '质量:', placeholder1: '请输入质量', label2: '体积:', placeholder2: '请输入体积', label3: '浓度:', placeholder3: '请输入浓度' }
+    ];
+    
+    const config = labelConfigs[calcType];
+    
+    document.getElementById('input1_label').textContent = config.label1;
+    document.getElementById('input1_field').placeholder = config.placeholder1;
+    document.getElementById('input2_label').textContent = config.label2;
+    document.getElementById('input2_field').placeholder = config.placeholder2;
+    
+    if (calcType === 3) {
+        document.getElementById('input3_label').textContent = config.label3;
+        document.getElementById('input3_field').placeholder = config.placeholder3;
+    }
+}
+
+// 摩尔质量计算
+async function performMolarCalculation() {
+    const resultArea = document.getElementById('molar_result');
+    if (!resultArea) return;
+    
+    try {
+        const calcType = parseInt(document.getElementById('calc_type').value);
+        const reagent = document.getElementById('reagent').value;
+        const customMolar = parseFloat(document.getElementById('custom_molar').value);
+        
+        // 获取输入值
+        const input1 = parseFloat(document.getElementById('input1_field').value);
+        const input1Unit = document.getElementById('input1_unit').value;
+        const input2 = parseFloat(document.getElementById('input2_field').value);
+        const input2Unit = document.getElementById('input2_unit').value;
+        
+        let input3 = null;
+        let input3Unit = null;
+        
+        if (calcType === 3) {
+            input3 = parseFloat(document.getElementById('input3_field').value);
+            input3Unit = document.getElementById('input3_unit').value;
+        }
+        
+        // 验证输入
+        if (!input1 || !input2 || (calcType === 3 && !input3)) {
+            resultArea.textContent = '请填写所有必需的输入项。';
+            resultArea.className = 'molar-result error';
+            return;
+        }
+        
+        // 获取摩尔质量
+        let molarMass = MOLAR_MASSES[reagent];
+        if (reagent === '其他') {
+            if (!customMolar || customMolar <= 0) {
+                resultArea.textContent = '请选择试剂或填写有效的自定义摩尔质量。';
+                resultArea.className = 'molar-result error';
+                return;
+            }
+            molarMass = customMolar;
+        }
+        
+        if (!molarMass) {
+            resultArea.textContent = '未找到该试剂的摩尔质量。';
+            resultArea.className = 'molar-result error';
+            return;
+        }
+        
+        // 发送计算请求
+        const formData = new FormData();
+        formData.append('calc_type', calcType);
+        formData.append('molar_mass', molarMass);
+        formData.append('input1', input1);
+        formData.append('input1_unit', input1Unit);
+        formData.append('input2', input2);
+        formData.append('input2_unit', input2Unit);
+        
+        if (calcType === 3) {
+            formData.append('input3', input3);
+            formData.append('input3_unit', input3Unit);
+        }
+        
+        const response = await fetch('/calculate_molar', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            resultArea.innerHTML = data.result;
+            resultArea.className = 'molar-result success';
+        } else {
+            resultArea.textContent = data.error || '计算失败';
+            resultArea.className = 'molar-result error';
+        }
+    } catch (error) {
+        resultArea.textContent = '网络错误，请重试';
+        resultArea.className = 'molar-result error';
     }
 }
 
